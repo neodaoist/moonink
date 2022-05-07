@@ -376,6 +376,7 @@ contract ERC721 is ERC165, IERC721, IERC721Events {
 
 interface IWords {
     function mint(string memory text_) external returns (uint256);
+    function mint(address recipient_, string memory text_) external returns (uint256);
 }
 
 /**
@@ -394,6 +395,14 @@ contract Words is IWords, ERC721, IERC721Metadata {
 
     function mint(string memory text_) external override returns (uint256) {
         _mint(msg.sender, tokenId);
+
+        text[tokenId] = text_;
+
+        return tokenId++;
+    }
+
+    function mint(address recipient_, string memory text_) external override returns (uint256) {
+        _mint(recipient_, tokenId);
 
         text[tokenId] = text_;
 
