@@ -3,13 +3,13 @@ pragma solidity ^0.8.13;
 
 import "ds-test/test.sol";
 import "forge-std/Test.sol";
-import "../src/Words.sol";
+import "../src/MoonInk.sol";
 
-contract WordsTest is Test {
+contract MoonInkTest is Test {
     
     // using stdStorage for StdStorage;
 
-    Words private words;
+    MoonInk private moon;
 
     event DebugLog(string message, uint256 tokenId);
     event Transfer(
@@ -19,29 +19,29 @@ contract WordsTest is Test {
     );
 
     function setUp() public {
-        words = new Words();
+        moon = new MoonInk();
     }
 
     function testFailOnInvalidTokenID() public {
-        words.tokenURI(0);
+        moon.tokenURI(0);
     }
 
     function testValidTokenID() public {
-        words.mint("");
-        words.tokenURI(0);
+        moon.mint("");
+        moon.tokenURI(0);
     }
 
     function testSuccessfulMintToMinter() public {
-        words.mint("");
-        // emit DebugLog("Next token ID", words.tokenId());
+        moon.mint("");
+        // emit DebugLog("Next token ID", moon.tokenId());
 
-        assertEq(words.ownerOf(0), address(this));
+        assertEq(moon.ownerOf(0), address(this));
     }
 
     function testSuccessfulMintToRecipient() public {
-        words.mint(address(1), "");
+        moon.mint(address(1), "");
 
-        assertEq(words.ownerOf(0), address(1));
+        assertEq(moon.ownerOf(0), address(1));
     }
 
     function testMintExpectEmitTransfer() public {
@@ -49,7 +49,7 @@ contract WordsTest is Test {
 
         emit Transfer(address(0), address(this), 0);
 
-        words.mint("");
+        moon.mint("");
     }
 
     function testMintToExpectEmitTransfer() public {
@@ -57,6 +57,13 @@ contract WordsTest is Test {
 
         emit Transfer(address(0), address(1), 0);
 
-        words.mint(address(1), "");
+        moon.mint(address(1), "");
+    }
+
+    function testCorrectPhases() public {
+        assertEq(moon.getMoonPhaseForDay(0).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForDay(7).name, "First Quarter");
+        assertEq(moon.getMoonPhaseForDay(14).name, "New Moon");
+        assertEq(moon.getMoonPhaseForDay(21).name, "Last Quarter");
     }
 }

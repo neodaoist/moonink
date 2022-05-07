@@ -374,24 +374,44 @@ contract ERC721 is ERC165, IERC721, IERC721Events {
     }
 }
 
-interface IWords {
+struct MoonPhase {
+    string name;
+    string svgImage;
+}
+
+interface IMoonInk {
     function mint(string memory text_) external returns (uint256);
     function mint(address recipient_, string memory text_) external returns (uint256);
 }
 
 /**
- * @title Words
+ * @title MoonInk
  * @author neodaoist
  *
- * Based on, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
+ * Based on Words.sol contract, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
  */ 
-contract Words is IWords, ERC721, IERC721Metadata {
-    string public override name = "Words";
-    string public override symbol = "WORDS";
+contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
+    string public override name = "Moon Ink";
+    string public override symbol = "MOON";
+
+    mapping(uint256 => MoonPhase) public moonPhases;
 
     uint256 public tokenId;
 
     mapping(uint256 => string) public text;
+
+    constructor() {
+        moonPhases[0] = MoonPhase("Full Moon", "");
+        moonPhases[7] = MoonPhase("First Quarter", "");
+        moonPhases[14] = MoonPhase("New Moon", "");
+        moonPhases[21] = MoonPhase("Last Quarter", "");
+    }
+
+    function getMoonPhaseForDay(uint256 day_) external view returns (MoonPhase memory) {
+        require(day_ <= 27, "Invalid day");
+
+        return moonPhases[day_];
+    }
 
     function mint(string memory text_) external override returns (uint256) {
         _mint(msg.sender, tokenId);
