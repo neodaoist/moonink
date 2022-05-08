@@ -1,2 +1,4 @@
 cache/
 out/
+js/node_modules
+js/.DS_Store
