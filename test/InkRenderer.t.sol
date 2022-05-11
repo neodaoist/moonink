@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "ds-test/test.sol";
 import "forge-std/Test.sol";
 import "../src/InkRenderer.sol";
 
@@ -22,7 +21,7 @@ contract InkRendererTest is Test {
         renderer = new InkRenderer();
     }
 
-    function testOne() public {
-        assertEq(renderer.testFunction(), 1);
-    }
+    // function testOne() public {
+    //     assertEq(renderer.testFunction(), 1);
+    // }
 }
