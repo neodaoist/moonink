@@ -196,9 +196,22 @@ contract InkRenderer {
                             svg.prop('x', '20'),
                             svg.prop('y', '90'),
                             svg.prop('font-size', '22'),
-                            svg.prop('fill', 'grey') // TODO adjust so as to fade in and out
+                            svg.prop('fill', 'black') // TODO adjust so as to fade in and out
                         ),
-                        'secret message written'
+                        string.concat(
+                            'secret message written',
+                            svg.el(
+                                'animate',
+                                string.concat(
+                                    svg.prop('attributeName', 'fill'),
+                                    svg.prop('from', 'black'),
+                                    svg.prop('to', 'grey'),
+                                    svg.prop('dur', '3s'),
+                                    svg.prop('fill', 'freeze')
+                                ),                                
+                                utils.NULL
+                            )
+                        )                        
                     ),
 
                     // moon phase
