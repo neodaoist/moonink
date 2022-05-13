@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "ds-test/test.sol";
 import "forge-std/Test.sol";
 import "../src/MoonInk.sol";
 
@@ -11,15 +10,15 @@ contract MoonInkTest is Test {
 
     MoonInk private moon;
 
-    event DebugLog(string message, uint256 tokenId);
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
     function setUp() public {
         moon = new MoonInk();
+    }
+
+    function testMetadata() public {
+        assertEq(moon.name(), "Moon Ink");
+        assertEq(moon.symbol(), "MOONINK");
     }
 
     function testFailOnInvalidTokenID() public {
@@ -33,7 +32,6 @@ contract MoonInkTest is Test {
 
     function testSuccessfulMintToMinter() public {
         moon.mint("");
-        // emit DebugLog("Next token ID", moon.tokenId());
 
         assertEq(moon.ownerOf(0), address(this));
     }
@@ -60,10 +58,38 @@ contract MoonInkTest is Test {
         moon.mint(address(1), "");
     }
 
-    function testCorrectPhases() public {
+    function testCorrectPhasesForDay() public {
         assertEq(moon.getMoonPhaseForDay(0).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForDay(7).name, "First Quarter");
+        assertEq(moon.getMoonPhaseForDay(1).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForDay(2).name, "Waning Gibbous");
+        assertEq(moon.getMoonPhaseForDay(3).name, "Waning Gibbous");
+        assertEq(moon.getMoonPhaseForDay(4).name, "Waning Gibbous");
+        assertEq(moon.getMoonPhaseForDay(5).name, "Waning Gibbous");
+        assertEq(moon.getMoonPhaseForDay(6).name, "Waning Gibbous");        
+        assertEq(moon.getMoonPhaseForDay(7).name, "Last Quarter");
+        assertEq(moon.getMoonPhaseForDay(8).name, "Last Quarter");
+        assertEq(moon.getMoonPhaseForDay(9).name, "Last Quarter");
+        assertEq(moon.getMoonPhaseForDay(10).name, "Waning Crescent");
+        assertEq(moon.getMoonPhaseForDay(11).name, "Waning Crescent");
+        assertEq(moon.getMoonPhaseForDay(12).name, "Waning Crescent");
+        assertEq(moon.getMoonPhaseForDay(13).name, "Waning Crescent");
         assertEq(moon.getMoonPhaseForDay(14).name, "New Moon");
-        assertEq(moon.getMoonPhaseForDay(21).name, "Last Quarter");
+        assertEq(moon.getMoonPhaseForDay(15).name, "New Moon");
+        assertEq(moon.getMoonPhaseForDay(16).name, "New Moon");
+        assertEq(moon.getMoonPhaseForDay(17).name, "Waxing Crescent");
+        assertEq(moon.getMoonPhaseForDay(18).name, "Waxing Crescent");
+        assertEq(moon.getMoonPhaseForDay(19).name, "Waxing Crescent");
+        assertEq(moon.getMoonPhaseForDay(20).name, "Waxing Crescent");
+        assertEq(moon.getMoonPhaseForDay(21).name, "First Quarter");
+        assertEq(moon.getMoonPhaseForDay(22).name, "First Quarter");
+        assertEq(moon.getMoonPhaseForDay(23).name, "First Quarter");
+        assertEq(moon.getMoonPhaseForDay(24).name, "Waxing Gibbous");
+        assertEq(moon.getMoonPhaseForDay(25).name, "Waxing Gibbous");
+        assertEq(moon.getMoonPhaseForDay(26).name, "Waxing Gibbous");
+        assertEq(moon.getMoonPhaseForDay(27).name, "Full Moon");
+    }
+
+    function testFailOnInvalidDay() public {
+        moon.getMoonPhaseForDay(28);
     }
 }

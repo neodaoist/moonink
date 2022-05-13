@@ -391,26 +391,38 @@ interface IMoonInk {
  * Based on Words.sol contract, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
  */ 
 contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
-    string public override name = "Moon Ink";
-    string public override symbol = "MOON";
 
-    mapping(uint256 => MoonPhase) public moonPhases;
+    string public override name = "Moon Ink";
+    string public override symbol = "MOONINK";
 
     uint256 public tokenId;
 
     mapping(uint256 => string) public text;
 
-    constructor() {
-        moonPhases[0] = MoonPhase("Full Moon", "");
-        moonPhases[7] = MoonPhase("First Quarter", "");
-        moonPhases[14] = MoonPhase("New Moon", "");
-        moonPhases[21] = MoonPhase("Last Quarter", "");
-    }
+    constructor() {}
 
     function getMoonPhaseForDay(uint256 day_) external view returns (MoonPhase memory) {
         require(day_ <= 27, "Invalid day");
 
-        return moonPhases[day_];
+        if ((0 <= day_ && day_ <= 1) || day_ == 27) {
+            return MoonPhase("Full Moon", "");
+        } else if (2 <= day_ && day_ <= 6) {
+            return MoonPhase("Waning Gibbous", "");
+        } else if (7 <= day_ && day_ <= 9) {
+            return MoonPhase("Last Quarter", "");
+        } else if (10 <= day_ && day_ <= 13) {
+            return MoonPhase("Waning Crescent", "");
+        } else if (14 <= day_ && day_ <= 16) {
+            return MoonPhase("New Moon", "");
+        } else if (17 <= day_ && day_ <= 20) {
+            return MoonPhase("Waxing Crescent", "");
+        } else if (21 <= day_ && day_ <= 23) {
+            return MoonPhase("First Quarter", "");
+        } else if (24 <= day_ && day_ <= 26) {
+            return MoonPhase("Waxing Gibbous", "");
+        } else {
+            // 
+        }
     }
 
     function mint(string memory text_) external override returns (uint256) {
