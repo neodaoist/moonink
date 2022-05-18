@@ -1,8 +1,8 @@
 # Acceptance Tests
 
-## Should be able to write message with moon ink to myself
+## Should be able to write message in moon ink to myself
 
-## Should be able to send message with moon ink to someone else
+## Should be able to send message in moon ink to someone else
 
 ## Should not be able to write message with more than XYZ characters
 
@@ -26,7 +26,7 @@
 
 #### Waning Crescent (phase 7)
 
-## Should display correct moon phase in bottom of message
+## Should display correct moon phase in message
 
 #### Full Moon (phase 0)
 

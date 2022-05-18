@@ -388,7 +388,7 @@ interface IMoonInk {
  * @title MoonInk
  * @author neodaoist
  *
- * Based on Words.sol contract, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
+ * Inspired by Words.sol contract, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
  */ 
 contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
@@ -397,28 +397,48 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     uint256 public tokenId;
 
+    ////////////////////////////////////////////////
+    ////////////////    Mint    ////////////////////
+    ////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////
+    ////////////////    Time    ////////////////////
+    ////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////
+    ////////////////    Words    ///////////////////
+    ////////////////////////////////////////////////
+
+    uint private genesisFullMoon = 1652716800;
+
     mapping(uint256 => string) public text;
 
     constructor() {}
 
-    function getMoonPhaseForDay(uint256 day_) external view returns (MoonPhase memory) {
-        require(day_ <= 27, "Invalid day");
+    function getMoonPhaseForCurrentTime(uint currentTime_) public view returns (MoonPhase memory) {
+        require(currentTime_ >= block.timestamp, "TIME_IN_PAST");
 
-        if ((0 <= day_ && day_ <= 1) || day_ == 27) {
+        return getMoonPhaseForDay(((currentTime_ - genesisFullMoon) / 60 / 60 / 24) % 28);
+    }
+
+    function getMoonPhaseForDay(uint256 dayOfCycle_) public view returns (MoonPhase memory) {
+        require(dayOfCycle_ <= 27, "INVALID_DAY");
+
+        if ((0 <= dayOfCycle_ && dayOfCycle_ <= 1) || dayOfCycle_ == 27) {
             return MoonPhase("Full Moon", "");
-        } else if (2 <= day_ && day_ <= 6) {
+        } else if (2 <= dayOfCycle_ && dayOfCycle_ <= 6) {
             return MoonPhase("Waning Gibbous", "");
-        } else if (7 <= day_ && day_ <= 9) {
+        } else if (7 <= dayOfCycle_ && dayOfCycle_ <= 9) {
             return MoonPhase("Last Quarter", "");
-        } else if (10 <= day_ && day_ <= 13) {
+        } else if (10 <= dayOfCycle_ && dayOfCycle_ <= 13) {
             return MoonPhase("Waning Crescent", "");
-        } else if (14 <= day_ && day_ <= 16) {
+        } else if (14 <= dayOfCycle_ && dayOfCycle_ <= 16) {
             return MoonPhase("New Moon", "");
-        } else if (17 <= day_ && day_ <= 20) {
+        } else if (17 <= dayOfCycle_ && dayOfCycle_ <= 20) {
             return MoonPhase("Waxing Crescent", "");
-        } else if (21 <= day_ && day_ <= 23) {
+        } else if (21 <= dayOfCycle_ && dayOfCycle_ <= 23) {
             return MoonPhase("First Quarter", "");
-        } else if (24 <= day_ && day_ <= 26) {
+        } else if (24 <= dayOfCycle_ && dayOfCycle_ <= 26) {
             return MoonPhase("Waxing Gibbous", "");
         } else {
             // 
@@ -448,7 +468,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         override
         returns (string memory)
     {
-        require(_exists(tokenId_), "nonexistent token");
+        require(_exists(tokenId_), "INVALID_TOKEN");
 
         string[3] memory parts;
         parts[
