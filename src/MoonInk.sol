@@ -397,23 +397,15 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     uint256 public tokenId;
 
-    ////////////////////////////////////////////////
-    ////////////////    Mint    ////////////////////
-    ////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////
-    ////////////////    Time    ////////////////////
-    ////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////
-    ////////////////    Words    ///////////////////
-    ////////////////////////////////////////////////
-
     uint private genesisFullMoon = 1652716800;
 
     mapping(uint256 => string) public text;
 
     constructor() {}
+
+    ////////////////////////////////////////////////
+    ////////////////    Time    ////////////////////
+    ////////////////////////////////////////////////
 
     function getMoonPhaseForCurrentTime(uint currentTime_) public view returns (MoonPhase memory) {
         require(currentTime_ >= block.timestamp, "TIME_IN_PAST");
@@ -444,6 +436,28 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
             // 
         }
     }
+
+    ////////////////////////////////////////////////
+    ////////////////    Words    ///////////////////
+    ////////////////////////////////////////////////
+
+    function getWords(uint256 tokenID_) public returns (string memory) {
+        return text[tokenID_];
+    }
+
+    function getWordsOnlyDuringFullMoon(uint256 tokenID_) public returns (string memory) {
+        // TODO make cleaner
+        require(
+            keccak256(abi.encodePacked(getMoonPhaseForCurrentTime(block.timestamp).name)) == keccak256(abi.encodePacked("Full Moon")),
+            "NOT_FULL_MOON"
+        );
+
+        return getWords(tokenID_);
+    }
+
+    ////////////////////////////////////////////////
+    ////////////////    Mint    ////////////////////
+    ////////////////////////////////////////////////
 
     function mint(string memory text_) external override returns (uint256) {
         _mint(msg.sender, tokenId);
@@ -486,7 +500,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
                     abi.encodePacked(
                         '{"name": "TokenId #',
                         toString(tokenId_),
-                        '", "description": "Test", "image": "data:image/svg+xml;base64,',
+                        '", "description": "XYZ", "image": "data:image/svg+xml;base64,',
                         Base64.encode(bytes(output)),
                         '"}'
                     )

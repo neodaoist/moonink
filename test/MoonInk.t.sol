@@ -207,6 +207,24 @@ contract MoonInkTest is Test {
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
+    function testGetWords() public {
+        uint256 tokenID = moon.mint("secret message");
+
+        assertEq(moon.getWords(tokenID), "secret message");
+    }
+
+    function testGetWordsOnlyDuringFullMoonWhenFullMoon() public {
+        uint256 tokenID = moon.mint("secret message");
+
+        // TODO add warp to block during full moon
+
+        assertEq(moon.getWords(tokenID), "secret message");
+    }
+
+    // TODO add sad paths when
+
+    // TODO add ability to buy vial of moon beams
+
     // 
 
 }

@@ -43,3 +43,5 @@
 #### Last Quarter (phase 6)
 
 #### Waning Crescent (phase 7)
+
+## Should be able to buy vial of moon beams read message outside of correct moon phase
