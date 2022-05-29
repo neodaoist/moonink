@@ -374,14 +374,20 @@ contract ERC721 is ERC165, IERC721, IERC721Events {
     }
 }
 
-struct MoonPhase {
-    string name;
-    string svgImage;
-}
-
 interface IMoonInk {
     function mint(string memory text_) external returns (uint256);
     function mint(address recipient_, string memory text_) external returns (uint256);
+}
+
+enum MoonPhase {
+    FullMoon,
+    WaningGibbous,
+    LastQuarter,
+    WaningCrescent,
+    NewMoon,
+    WaxingCrescent,
+    FirstQuarter,
+    WaxingGibbous
 }
 
 /**
@@ -407,31 +413,31 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     ////////////////    Time    ////////////////////
     ////////////////////////////////////////////////
 
-    function getMoonPhaseForCurrentTime(uint currentTime_) public view returns (MoonPhase memory) {
+    function getMoonPhaseForCurrentTime(uint currentTime_) public view returns (MoonPhase) {
         require(currentTime_ >= block.timestamp, "TIME_IN_PAST");
 
         return getMoonPhaseForDay(((currentTime_ - genesisFullMoon) / 60 / 60 / 24) % 28);
     }
 
-    function getMoonPhaseForDay(uint256 dayOfCycle_) public view returns (MoonPhase memory) {
+    function getMoonPhaseForDay(uint256 dayOfCycle_) public view returns (MoonPhase) {
         require(dayOfCycle_ <= 27, "INVALID_DAY");
 
         if ((0 <= dayOfCycle_ && dayOfCycle_ <= 1) || dayOfCycle_ == 27) {
-            return MoonPhase("Full Moon", "");
+            return MoonPhase.FullMoon;
         } else if (2 <= dayOfCycle_ && dayOfCycle_ <= 6) {
-            return MoonPhase("Waning Gibbous", "");
+            return MoonPhase.WaningGibbous;
         } else if (7 <= dayOfCycle_ && dayOfCycle_ <= 9) {
-            return MoonPhase("Last Quarter", "");
+            return MoonPhase.LastQuarter;
         } else if (10 <= dayOfCycle_ && dayOfCycle_ <= 13) {
-            return MoonPhase("Waning Crescent", "");
+            return MoonPhase.WaningCrescent;
         } else if (14 <= dayOfCycle_ && dayOfCycle_ <= 16) {
-            return MoonPhase("New Moon", "");
+            return MoonPhase.NewMoon;
         } else if (17 <= dayOfCycle_ && dayOfCycle_ <= 20) {
-            return MoonPhase("Waxing Crescent", "");
+            return MoonPhase.WaxingCrescent;
         } else if (21 <= dayOfCycle_ && dayOfCycle_ <= 23) {
-            return MoonPhase("First Quarter", "");
+            return MoonPhase.FirstQuarter;
         } else if (24 <= dayOfCycle_ && dayOfCycle_ <= 26) {
-            return MoonPhase("Waxing Gibbous", "");
+            return MoonPhase.WaxingGibbous;
         } else {
             // 
         }
@@ -446,9 +452,8 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     }
 
     function getWordsOnlyDuringFullMoon(uint256 tokenID_) public returns (string memory) {
-        // TODO make cleaner
         require(
-            keccak256(abi.encodePacked(getMoonPhaseForCurrentTime(block.timestamp).name)) == keccak256(abi.encodePacked("Full Moon")),
+            getMoonPhaseForCurrentTime(block.timestamp) == MoonPhase.FullMoon,
             "NOT_FULL_MOON"
         );
 

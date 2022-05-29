@@ -112,35 +112,47 @@ contract MoonInkTest is Test {
     ////////////////    Time    ////////////////////
     ////////////////////////////////////////////////
 
+    function assertEq(MoonPhase phaseA, MoonPhase phaseB) internal {
+        bytes memory a = abi.encodePacked(phaseA);
+        bytes memory b = abi.encodePacked(phaseB);
+
+        if (keccak256(a) != keccak256(abi.encodePacked(b))) {
+            emit log            ("Error: a == b not satisfied [bytes]");
+            emit log_named_bytes("  Expected", b);
+            emit log_named_bytes("    Actual", a);
+            fail();
+        }
+    }
+
     function testCorrectPhasesForDay() public {
-        assertEq(moon.getMoonPhaseForDay(0).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForDay(1).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForDay(2).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForDay(3).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForDay(4).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForDay(5).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForDay(6).name, "Waning Gibbous");        
-        assertEq(moon.getMoonPhaseForDay(7).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForDay(8).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForDay(9).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForDay(10).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForDay(11).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForDay(12).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForDay(13).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForDay(14).name, "New Moon");
-        assertEq(moon.getMoonPhaseForDay(15).name, "New Moon");
-        assertEq(moon.getMoonPhaseForDay(16).name, "New Moon");
-        assertEq(moon.getMoonPhaseForDay(17).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForDay(18).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForDay(19).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForDay(20).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForDay(21).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForDay(22).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForDay(23).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForDay(24).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForDay(25).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForDay(26).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForDay(27).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForDay(0), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForDay(1), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForDay(2), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForDay(3), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForDay(4), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForDay(5), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForDay(6), MoonPhase.WaningGibbous);        
+        assertEq(moon.getMoonPhaseForDay(7), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForDay(8), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForDay(9), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForDay(10), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForDay(11), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForDay(12), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForDay(13), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForDay(14), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForDay(15), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForDay(16), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForDay(17), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForDay(18), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForDay(19), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForDay(20), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForDay(21), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForDay(22), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForDay(23), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForDay(24), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForDay(25), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForDay(26), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForDay(27), MoonPhase.FullMoon);
     }
 
     function testInvalidDayShouldFail() public {
@@ -149,56 +161,56 @@ contract MoonInkTest is Test {
     }
 
     function testCorrectMoonPhasesForCurrentTime() public {
-        assertEq(moon.getMoonPhaseForCurrentTime(time0).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(time1).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(time2).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time3).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time4).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time5).name, "Waning Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time6).name, "Waning Gibbous");        
-        assertEq(moon.getMoonPhaseForCurrentTime(time7).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time8).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time9).name, "Last Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time10).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time11).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time12).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time13).name, "Waning Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time14).name, "New Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(time15).name, "New Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(time16).name, "New Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(time17).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time18).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time19).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time20).name, "Waxing Crescent");
-        assertEq(moon.getMoonPhaseForCurrentTime(time21).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time22).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time23).name, "First Quarter");
-        assertEq(moon.getMoonPhaseForCurrentTime(time24).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time25).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time26).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(time27).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(time0), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(time1), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(time2), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time3), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time4), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time5), MoonPhase.WaningGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time6), MoonPhase.WaningGibbous);        
+        assertEq(moon.getMoonPhaseForCurrentTime(time7), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time8), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time9), MoonPhase.LastQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time10), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time11), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time12), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time13), MoonPhase.WaningCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time14), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(time15), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(time16), MoonPhase.NewMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(time17), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time18), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time19), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time20), MoonPhase.WaxingCrescent);
+        assertEq(moon.getMoonPhaseForCurrentTime(time21), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time22), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time23), MoonPhase.FirstQuarter);
+        assertEq(moon.getMoonPhaseForCurrentTime(time24), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time25), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time26), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(time27), MoonPhase.FullMoon);
 
-        assertEq(moon.getMoonPhaseForCurrentTime(timeb0).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(timeb1).name, "Full Moon");
-        assertEq(moon.getMoonPhaseForCurrentTime(timeb2).name, "Waning Gibbous");
+        assertEq(moon.getMoonPhaseForCurrentTime(timeb0), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(timeb1), MoonPhase.FullMoon);
+        assertEq(moon.getMoonPhaseForCurrentTime(timeb2), MoonPhase.WaningGibbous);
 
-        assertEq(moon.getMoonPhaseForCurrentTime(timec25).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(timec26).name, "Waxing Gibbous");
-        assertEq(moon.getMoonPhaseForCurrentTime(timec27).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(timec25), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(timec26), MoonPhase.WaxingGibbous);
+        assertEq(moon.getMoonPhaseForCurrentTime(timec27), MoonPhase.FullMoon);
     }
 
     function testCorrectMoonPhasesForRandomTimes() public {
         uint rand0 = time0 + (3 * 60 * 60); // 3 hours
-        assertEq(moon.getMoonPhaseForCurrentTime(rand0).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(rand0), MoonPhase.FullMoon);
 
         uint rand1 = time0 + (3 * 60 * 60) + (33 * 60); // 3 hours 33 minutes
-        assertEq(moon.getMoonPhaseForCurrentTime(rand1).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(rand1), MoonPhase.FullMoon);
 
         uint rand2 = time0 + (3 * 60 * 60) + (33 * 60) + 13; // 3 hours 33 minutes 13 seconds
-        assertEq(moon.getMoonPhaseForCurrentTime(rand2).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(rand2), MoonPhase.FullMoon);
 
         uint rand3 = time0 + (18 * 60 * 60); // 18 hours
-        assertEq(moon.getMoonPhaseForCurrentTime(rand3).name, "Full Moon");
+        assertEq(moon.getMoonPhaseForCurrentTime(rand3), MoonPhase.FullMoon);
     }
 
     // TODO add fuzz testing for more random times
