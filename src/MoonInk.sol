@@ -447,14 +447,23 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
-    function getWords(uint256 tokenID_) public returns (string memory) {
+    function getWords(uint256 tokenID_) internal view returns (string memory) {
         return text[tokenID_];
     }
 
-    function getWordsOnlyDuringFullMoon(uint256 tokenID_) public returns (string memory) {
+    function getWordsOnlyDuringFullMoon(uint256 tokenID_) public view returns (string memory) {
         require(
             getMoonPhaseForCurrentTime(block.timestamp) == MoonPhase.FullMoon,
             "NOT_FULL_MOON"
+        );
+
+        return getWords(tokenID_);
+    }
+
+    function buyVialOfMoonBeams(uint256 tokenID_) public payable returns (string memory) {
+        require(
+            msg.value >= 0.01 ether,
+            "NOT_ENOUGH_ETHER"
         );
 
         return getWords(tokenID_);

@@ -112,18 +112,6 @@ contract MoonInkTest is Test {
     ////////////////    Time    ////////////////////
     ////////////////////////////////////////////////
 
-    function assertEq(MoonPhase phaseA, MoonPhase phaseB) internal {
-        bytes memory a = abi.encodePacked(phaseA);
-        bytes memory b = abi.encodePacked(phaseB);
-
-        if (keccak256(a) != keccak256(abi.encodePacked(b))) {
-            emit log            ("Error: a == b not satisfied [bytes]");
-            emit log_named_bytes("  Expected", b);
-            emit log_named_bytes("    Actual", a);
-            fail();
-        }
-    }
-
     function testCorrectPhasesForDay() public {
         assertEq(moon.getMoonPhaseForDay(0), MoonPhase.FullMoon);
         assertEq(moon.getMoonPhaseForDay(1), MoonPhase.FullMoon);
@@ -219,24 +207,63 @@ contract MoonInkTest is Test {
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
-    function testGetWords() public {
-        uint256 tokenID = moon.mint("secret message");
+    // function testGetWords() public {
+    //     uint256 tokenID = moon.mint("secret message");
 
-        assertEq(moon.getWords(tokenID), "secret message");
-    }
+    //     assertEq(moon.getWords(tokenID), "secret message");
+    // }
 
     function testGetWordsOnlyDuringFullMoonWhenFullMoon() public {
         uint256 tokenID = moon.mint("secret message");
 
-        // TODO add warp to block during full moon
+        vm.warp(time0);
 
-        assertEq(moon.getWords(tokenID), "secret message");
+        assertEq(moon.getWordsOnlyDuringFullMoon(tokenID), "secret message");
     }
 
-    // TODO add sad paths when
+    function testGetWordsOnlyDuringFullMoonWhenNotFullMoonShouldFail() public {
+        uint256 tokenID = moon.mint("secret message");
 
-    // TODO add ability to buy vial of moon beams
+        vm.warp(time2);
+
+        vm.expectRevert("NOT_FULL_MOON");
+
+        moon.getWordsOnlyDuringFullMoon(tokenID);
+    }
+
+    function testBuyVialOfMoonBeams() public {
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time2);
+
+        assertEq(moon.buyVialOfMoonBeams{value: 0.01 ether}(tokenID), "secret message");
+    }
+
+    function testBuyVialOfMoonBeamsWhenNotEnoughEtherShouldFail() public {
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time2);
+
+        vm.expectRevert("NOT_ENOUGH_ETHER");
+
+        moon.buyVialOfMoonBeams{value: 0.009 ether}(tokenID);
+    }
 
     // 
 
+    ////////////////////////////////////////////////
+    ////////////////    Utility    /////////////////
+    ////////////////////////////////////////////////
+
+    function assertEq(MoonPhase phaseA, MoonPhase phaseB) internal {
+        bytes memory a = abi.encodePacked(phaseA);
+        bytes memory b = abi.encodePacked(phaseB);
+
+        if (keccak256(a) != keccak256(abi.encodePacked(b))) {
+            emit log            ("Error: a == b not satisfied [bytes]");
+            emit log_named_bytes("  Expected", b);
+            emit log_named_bytes("    Actual", a);
+            fail();
+        }
+    }
 }
