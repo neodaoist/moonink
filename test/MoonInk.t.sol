@@ -231,24 +231,139 @@ contract MoonInkTest is Test {
         moon.getWordsOnlyDuringFullMoon(tokenID);
     }
 
-    function testBuyVialOfMoonBeams() public {
+    ////////////////////////////////////////////////
+    ////////////////    Access    //////////////////
+    ////////////////////////////////////////////////
+
+    function testReadWithBuyVialOfMoonBeams() public {
+        vm.warp(time0);
         uint256 tokenID = moon.mint("secret message");
 
-        vm.warp(time2);
+        vm.warp(time14);
 
         assertEq(moon.buyVialOfMoonBeams{value: 0.01 ether}(tokenID), "secret message");
     }
 
-    function testBuyVialOfMoonBeamsWhenNotEnoughEtherShouldFail() public {
+    function testReadWithBuyVialOfMoonBeamsWhenNotEnoughEtherShouldFail() public {
+        vm.warp(time0);
         uint256 tokenID = moon.mint("secret message");
 
-        vm.warp(time2);
+        vm.warp(time14);
 
         vm.expectRevert("NOT_ENOUGH_ETHER");
 
         moon.buyVialOfMoonBeams{value: 0.009 ether}(tokenID);
     }
 
+    function testReadWithCastConnexionWhenWords() public {
+        vm.mockCall(
+            0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(1)
+        );
+        vm.mockCall(
+            0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time14);
+
+        assertEq(moon.castConnexion(tokenID), "secret message");
+    }
+
+    function testReadWithCastConnexionWhenWatchfaces() public {
+        vm.mockCall(
+            0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(1)
+        );
+        vm.mockCall(
+            0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time14);
+
+        assertEq(moon.castConnexion(tokenID), "secret message");        
+    }
+
+    function testReadWithCastConnexionWhenCoven() public {
+        vm.mockCall(
+            0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(1)
+        );
+
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time14);
+
+        assertEq(moon.castConnexion(tokenID), "secret message");
+    }
+
+    function testReadWithCastConnexionWhenNotConnectedShouldFail() public {
+        vm.mockCall(
+            0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+        vm.mockCall(
+            0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
+            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encode(0)
+        );
+
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time14);
+
+        vm.expectRevert("NO_CONNEXIONS_FOUND");
+
+        moon.castConnexion(tokenID);
+    }
+
+    // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
+    // TODO store which phase and check against that, not Full Moon
+    // TODO practice deploying contract to a vanity address
+    // TODO add second moon image based on current phase, with animation
+    // TODO determine if moon phases work out 1,000 years
+    // TODO add back in token ID (for easier reading)
+    // TODO sketch mint page in Figma, reach out to designers
     // 
 
     ////////////////////////////////////////////////

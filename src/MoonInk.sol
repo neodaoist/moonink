@@ -394,7 +394,8 @@ enum MoonPhase {
  * @title MoonInk
  * @author neodaoist
  *
- * Inspired by Words.sol contract, originally written by MirrorXYZ: https://optimistic.etherscan.io/address/0xa698713a3bc386970Cdc95A720B5754cC0f96931#code
+ * Inspired by Words.sol contract, originally written by MirrorXYZ
+ * https://etherscan.io/address/0xa698713a3bc386970cdc95a720b5754cc0f96931#code
  */ 
 contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
@@ -460,10 +461,25 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         return getWords(tokenID_);
     }
 
+    ////////////////////////////////////////////////
+    ////////////////    Access    //////////////////
+    ////////////////////////////////////////////////
+
     function buyVialOfMoonBeams(uint256 tokenID_) public payable returns (string memory) {
         require(
             msg.value >= 0.01 ether,
             "NOT_ENOUGH_ETHER"
+        );
+
+        return getWords(tokenID_);
+    }
+
+    function castConnexion(uint256 tokenID_) public view returns (string memory) {
+        require(
+            IERC721Ownership(0xa698713a3bc386970Cdc95A720B5754cC0f96931).balanceOf(msg.sender) >= 1 ||
+            IERC721Ownership(0x8d3b078D9D9697a8624d4B32743B02d270334AF1).balanceOf(msg.sender) >= 1 ||
+            IERC721Ownership(0x5180db8F5c931aaE63c74266b211F580155ecac8).balanceOf(msg.sender) >= 1,
+            "NO_CONNEXIONS_FOUND"
         );
 
         return getWords(tokenID_);
@@ -548,6 +564,15 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         }
         return string(buffer);
     }
+}
+
+// Inspired by WINTΞR's implementation of checking other NFT collections
+// with simplified token interfact
+//
+// https://etherscan.io/address/0x555555551777611fd8eb00df11ea0904b560cf74#code#F1#L79
+// https://twitter.com/w1nt3r_eth/status/1522669750848921600
+interface IERC721Ownership {
+    function balanceOf(address owner) external view returns (uint256);
 }
 
 /// [MIT License]
