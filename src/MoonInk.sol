@@ -75,6 +75,15 @@ interface IERC721 {
     ) external;
 }
 
+// Inspired by WINTΞR's implementation of checking other NFT collections
+// with simplified token interfact
+//
+// https://etherscan.io/address/0x555555551777611fd8eb00df11ea0904b560cf74#code#F1#L79
+// https://twitter.com/w1nt3r_eth/status/1522669750848921600
+// interface IERC721Ownership {
+//     function balanceOf(address owner) external view returns (uint256);
+// }
+
 interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
@@ -390,6 +399,11 @@ enum MoonPhase {
     WaxingGibbous
 }
 
+struct SecretMessage {
+    MoonPhase phase;
+    string text;
+}
+
 /**
  * @title MoonInk
  * @author neodaoist
@@ -406,7 +420,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     uint private genesisFullMoon = 1652716800;
 
-    mapping(uint256 => string) public text;
+    mapping(uint256 => SecretMessage) public secretMessages;
 
     constructor() {}
 
@@ -449,7 +463,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     ////////////////////////////////////////////////
 
     function getWords(uint256 tokenID_) internal view returns (string memory) {
-        return text[tokenID_];
+        return secretMessages[tokenID_].text;
     }
 
     function getWordsOnlyDuringFullMoon(uint256 tokenID_) public view returns (string memory) {
@@ -476,9 +490,9 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     function castConnexion(uint256 tokenID_) public view returns (string memory) {
         require(
-            IERC721Ownership(0xa698713a3bc386970Cdc95A720B5754cC0f96931).balanceOf(msg.sender) >= 1 ||
-            IERC721Ownership(0x8d3b078D9D9697a8624d4B32743B02d270334AF1).balanceOf(msg.sender) >= 1 ||
-            IERC721Ownership(0x5180db8F5c931aaE63c74266b211F580155ecac8).balanceOf(msg.sender) >= 1,
+            IERC721(0xa698713a3bc386970Cdc95A720B5754cC0f96931).balanceOf(msg.sender) >= 1 ||
+            IERC721(0x8d3b078D9D9697a8624d4B32743B02d270334AF1).balanceOf(msg.sender) >= 1 ||
+            IERC721(0x5180db8F5c931aaE63c74266b211F580155ecac8).balanceOf(msg.sender) >= 1,
             "NO_CONNEXIONS_FOUND"
         );
 
@@ -492,15 +506,17 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     function mint(string memory text_) external override returns (uint256) {
         _mint(msg.sender, tokenId);
 
-        text[tokenId] = text_;
+        MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
+        secretMessages[tokenId] = SecretMessage(phase, text_);
 
         return tokenId++;
     }
 
-    function mint(address recipient_, string memory text_) external override returns (uint256) {
+    function mint(address recipient_, string memory text_) public override returns (uint256) {
         _mint(recipient_, tokenId);
 
-        text[tokenId] = text_;
+        MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
+        secretMessages[tokenId] = SecretMessage(phase, text_);
 
         return tokenId++;
     }
@@ -518,7 +534,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         parts[
             0
         ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" /><text x="10" y="20" class="base">';
-        parts[1] = text[tokenId_];
+        parts[1] = secretMessages[tokenId_].text;
         parts[2] = "</text></svg>";
 
         string memory output = string(
@@ -564,15 +580,6 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         }
         return string(buffer);
     }
-}
-
-// Inspired by WINTΞR's implementation of checking other NFT collections
-// with simplified token interfact
-//
-// https://etherscan.io/address/0x555555551777611fd8eb00df11ea0904b560cf74#code#F1#L79
-// https://twitter.com/w1nt3r_eth/status/1522669750848921600
-interface IERC721Ownership {
-    function balanceOf(address owner) external view returns (uint256);
 }
 
 /// [MIT License]
