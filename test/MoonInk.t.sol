@@ -70,7 +70,7 @@ contract MoonInkTest is Test {
     function testValidTokenID() public {
         vm.warp(time0);
         moon.mint("");
-        
+
         moon.tokenURI(0);
     }
 
@@ -207,17 +207,32 @@ contract MoonInkTest is Test {
         assertEq(moon.getMoonPhaseForCurrentTime(rand3), MoonPhase.FullMoon);
     }
 
-    // TODO add fuzz testing for more random times
+    // TODO add fuzz testing for more times
 
     ////////////////////////////////////////////////
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
-    // function testGetWords() public {
-    //     uint256 tokenID = moon.mint("secret message");
+    function testReadSecretMessageWhenCorrectPhase() public {
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
 
-    //     assertEq(moon.getWords(tokenID), "secret message");
-    // }
+        vm.warp(timeb0);
+        
+        assertEq(moon.readSecretMessage(tokenID), "secret message");
+    }
+
+    function testReadSecretMessageWhenNotCorrectPhaseShouldFail() public {
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time13);
+
+        vm.expectRevert("NOT_CORRECT_MOON_PHASE");
+        moon.readSecretMessage(tokenID);
+    }
+
+    // TODO add fuzz testing for more times
 
     function testGetWordsOnlyDuringFullMoonWhenFullMoon() public {
         vm.warp(time0);
@@ -371,7 +386,7 @@ contract MoonInkTest is Test {
     }
 
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
-    // TODO store which phase and check against that, not Full Moon
+    // DONE store which phase and check against that, not Full Moon
     // TODO practice deploying contract to a vanity address
     // TODO add second moon image based on current phase, with animation
     // TODO determine if moon phases work out 1,000 years

@@ -462,8 +462,14 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
-    function getWords(uint256 tokenID_) internal view returns (string memory) {
-        return secretMessages[tokenID_].text;
+    function readSecretMessage(uint256 tokenID_) public view returns (string memory) {
+        SecretMessage memory secretMessage = secretMessages[tokenID_];
+        require(
+            getMoonPhaseForCurrentTime(block.timestamp) == secretMessage.phase,
+            "NOT_CORRECT_MOON_PHASE"
+        );
+
+        return getWords(tokenID_);
     }
 
     function getWordsOnlyDuringFullMoon(uint256 tokenID_) public view returns (string memory) {
@@ -473,6 +479,10 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
         );
 
         return getWords(tokenID_);
+    }
+
+    function getWords(uint256 tokenID_) internal view returns (string memory) {
+        return secretMessages[tokenID_].text;
     }
 
     ////////////////////////////////////////////////
