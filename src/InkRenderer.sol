@@ -159,79 +159,91 @@ contract InkRenderer {
     }
 
     function render(uint256 _tokenId) public view returns (string memory) {
-            return
-                string.concat(
-                    // start
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000">',
+        return
+            string.concat(
+                // start
+                '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000">',
 
-                    // token text
-                    svg.text(
-                        string.concat(
-                            svg.prop('x', '20'),
-                            svg.prop('y', '40'),
-                            svg.prop('font-size', '22'),
-                            svg.prop('fill', 'white')
-                        ),
-                        string.concat(
-                            svg.cdata('Moon Ink #'),
-                            utils.uint2str(_tokenId)
+                // title and token ID
+                svg.text(
+                    string.concat(
+                        svg.prop('x', '20'),
+                        svg.prop('y', '40'),
+                        svg.prop('font-size', '22'),
+                        svg.prop('fill', 'white')
+                    ),
+                    string.concat(
+                        svg.cdata('Moon Ink #'),
+                        utils.uint2str(_tokenId)
+                    )
+                ),
+
+                // minted moon phase image
+                svg.g(
+                    string.concat(
+                        svg.prop('transform', 'translate(0.000000,300.000000) scale(0.182926829,-0.182926829)'),
+                        svg.prop('fill', 'none'),
+                        svg.prop('stroke', 'white'),
+                        svg.prop('stroke-width', '3'),
+                        svg.prop('stroke-dasharray', '3,3')
+                    ),
+                    moonPhases[17].svgImage
+                ),
+
+                // TODO current moon phase image
+                // svg.g(
+                //     string.concat(
+                //         svg.prop('transform', 'translate(0.000000,300.000000) scale(0.182926829,-0.182926829)'),
+                //         svg.prop('fill', 'none'),
+                //         svg.prop('stroke', 'white'),
+                //         svg.prop('stroke-width', '3'),
+                //         svg.prop('stroke-dasharray', '3,3')
+                //     ),
+                //     moonPhases[17].svgImage
+                // ),
+
+                // secret message
+                svg.text(
+                    string.concat(
+                        svg.prop('x', '20'),
+                        svg.prop('y', '90'),
+                        svg.prop('font-size', '22'),
+                        svg.prop('fill', 'black') // TODO adjust so as to fade in and out
+                    ),
+                    string.concat(
+                        'secret message written secret message written secret message written secret message written secret message written secret message written',
+                        svg.el(
+                            'animate',
+                            string.concat(
+                                svg.prop('attributeName', 'fill'),
+                                svg.prop('from', 'black'),
+                                svg.prop('to', 'grey'),
+                                svg.prop('dur', '3s'),
+                                svg.prop('fill', 'freeze')
+                            ),                                
+                            utils.NULL
                         )
+                    )                        
+                ),
+
+                // title/body separator
+                svg.rect(
+                    string.concat(
+                        svg.prop('fill', 'white'),
+                        svg.prop('x', '20'),
+                        svg.prop('y', '50'),
+                        svg.prop('width', utils.uint2str(260)),
+                        svg.prop('height', utils.uint2str(10))
                     ),
+                    utils.NULL
+                ),
 
-                    // token text bar
-                    svg.g(
-                        string.concat(
-                            svg.prop('transform', 'translate(0.000000,300.000000) scale(0.182926829,-0.182926829)'),
-                            svg.prop('fill', 'none'),
-                            svg.prop('stroke', 'white'),
-                            svg.prop('stroke-width', '3'),
-                            svg.prop('stroke-dasharray', '3,3')
-                        ),
-                        moonPhases[17].svgImage
-                    ),
+                // end
+                '</svg>'
+            );
+    }
 
-                    // message text
-                    svg.text(
-                        string.concat(
-                            svg.prop('x', '20'),
-                            svg.prop('y', '90'),
-                            svg.prop('font-size', '22'),
-                            svg.prop('fill', 'black') // TODO adjust so as to fade in and out
-                        ),
-                        string.concat(
-                            'secret message written',
-                            svg.el(
-                                'animate',
-                                string.concat(
-                                    svg.prop('attributeName', 'fill'),
-                                    svg.prop('from', 'black'),
-                                    svg.prop('to', 'grey'),
-                                    svg.prop('dur', '3s'),
-                                    svg.prop('fill', 'freeze')
-                                ),                                
-                                utils.NULL
-                            )
-                        )                        
-                    ),
-
-                    // moon phase
-                    svg.rect(
-                        string.concat(
-                            svg.prop('fill', 'white'),
-                            svg.prop('x', '20'),
-                            svg.prop('y', '50'),
-                            svg.prop('width', utils.uint2str(260)),
-                            svg.prop('height', utils.uint2str(10))
-                        ),
-                        utils.NULL
-                    ),
-
-                    // end
-                    '</svg>'
-                );
-        }
-
-        function example() external view returns (string memory) {
-            return render(1);
-        }
+    function example() external view returns (string memory) {
+        return render(1);
+    }
 }
