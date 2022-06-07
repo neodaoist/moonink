@@ -164,7 +164,7 @@ contract InkRenderer {
                 // start
                 '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000">',
 
-                // title and token ID
+                // DONE title and token ID
                 svg.text(
                     string.concat(
                         svg.prop('x', '20'),
@@ -226,7 +226,7 @@ contract InkRenderer {
                     )                        
                 ),
 
-                // title/body separator
+                // DONE title/body separator
                 svg.rect(
                     string.concat(
                         svg.prop('fill', 'white'),
@@ -238,7 +238,7 @@ contract InkRenderer {
                     utils.NULL
                 ),
 
-                // end
+                // DONE end
                 '</svg>'
             );
     }

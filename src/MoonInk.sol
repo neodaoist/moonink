@@ -187,17 +187,55 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     function render(uint256 tokenID_) public view returns (string memory) {
         return string.concat(
             // start
-            '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" /><text x="10" y="20" class="base">',
+            '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" />',
+            // '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000">',
+
+
+
+            // title and token ID
+            svg.text(
+                string.concat(
+                    svg.prop('x', '20'),
+                    svg.prop('y', '40'),
+                    svg.prop('font-size', '22'),
+                    svg.prop('fill', 'white')
+                ),
+                string.concat(
+                    svg.cdata('Moon Ink #'),
+                    utils.uint2str(tokenID_)
+                )
+            ),
+
+            
 
             // secret message
+            '<text x="10" y="20" class="base">',
             secretMessages[tokenID_].text,
+            '</text>',
+
+
+
+            // title/body separator
+            svg.rect(
+                string.concat(
+                    svg.prop('fill', 'white'),
+                    svg.prop('x', '20'),
+                    svg.prop('y', '50'),
+                    svg.prop('width', utils.uint2str(260)),
+                    svg.prop('height', utils.uint2str(10))
+                ),
+                utils.NULL
+            ),
+
+            
 
             // end
-            '</text></svg>'
+            '</svg>'
         );
     }
 
-    function example() external view returns (string memory) {
+    function example() external /** view */ returns (string memory) {
+        secretMessages[1] = SecretMessage(MoonPhase.FullMoon, "secret message");
         return render(1);
     }
 
