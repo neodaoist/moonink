@@ -68,7 +68,9 @@ contract MoonInkTest is Test {
     }
 
     function testValidTokenID() public {
+        vm.warp(time0);
         moon.mint("");
+
         moon.tokenURI(0);
     }
 
@@ -79,18 +81,21 @@ contract MoonInkTest is Test {
     ////////////////////////////////////////////////
 
     function testSuccessfulMintToMinter() public {
+        vm.warp(time0);
         moon.mint("");
 
         assertEq(moon.ownerOf(0), address(this));
     }
 
     function testSuccessfulMintToRecipient() public {
+        vm.warp(time0);
         moon.mint(address(1), "");
 
         assertEq(moon.ownerOf(0), address(1));
     }
 
     function testMintExpectEmitTransfer() public {
+        vm.warp(time0);
         vm.expectEmit(true, true, true, true);
 
         emit Transfer(address(0), address(this), 0);
@@ -99,6 +104,7 @@ contract MoonInkTest is Test {
     }
 
     function testMintToExpectEmitTransfer() public {
+        vm.warp(time0);
         vm.expectEmit(true, true, true, true);
 
         emit Transfer(address(0), address(1), 0);
@@ -201,33 +207,55 @@ contract MoonInkTest is Test {
         assertEq(moon.getMoonPhaseForCurrentTime(rand3), MoonPhase.FullMoon);
     }
 
-    // TODO add fuzz testing for more random times
+    // TODO add fuzz testing for more times
 
     ////////////////////////////////////////////////
     ////////////////    Words    ///////////////////
     ////////////////////////////////////////////////
 
-    // function testGetWords() public {
-    //     uint256 tokenID = moon.mint("secret message");
-
-    //     assertEq(moon.getWords(tokenID), "secret message");
-    // }
-
-    function testGetWordsOnlyDuringFullMoonWhenFullMoon() public {
+    function testReadSecretMessageWhenCorrectPhase() public {
+        vm.warp(time0);
         uint256 tokenID = moon.mint("secret message");
 
-        vm.warp(time0);
+        vm.warp(timeb0);
+        
+        assertEq(moon.readSecretMessage(tokenID), "secret message");
+    }
 
+    function testReadSecretMessageWhenNotCorrectPhaseShouldFail() public {
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        vm.warp(time13);
+
+        vm.expectRevert("NOT_CORRECT_MOON_PHASE");
+        moon.readSecretMessage(tokenID);
+    }
+
+    // TODO add fuzz testing for more times
+
+    function testGetWordsOnlyDuringFullMoonWhenFullMoon() public {
+        vm.warp(time0);
+        uint256 tokenID = moon.mint("secret message");
+
+        assertEq(moon.getWordsOnlyDuringFullMoon(tokenID), "secret message");
+
+        vm.warp(time27);
+        assertEq(moon.getWordsOnlyDuringFullMoon(tokenID), "secret message");
+
+        vm.warp(timeb0);
+        assertEq(moon.getWordsOnlyDuringFullMoon(tokenID), "secret message");
+
+        vm.warp(timec27);
         assertEq(moon.getWordsOnlyDuringFullMoon(tokenID), "secret message");
     }
 
     function testGetWordsOnlyDuringFullMoonWhenNotFullMoonShouldFail() public {
+        vm.warp(time0);
         uint256 tokenID = moon.mint("secret message");
 
         vm.warp(time2);
-
         vm.expectRevert("NOT_FULL_MOON");
-
         moon.getWordsOnlyDuringFullMoon(tokenID);
     }
 
@@ -258,17 +286,17 @@ contract MoonInkTest is Test {
     function testReadWithCastConnexionWhenWords() public {
         vm.mockCall(
             0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(1)
         );
         vm.mockCall(
             0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
 
@@ -283,17 +311,17 @@ contract MoonInkTest is Test {
     function testReadWithCastConnexionWhenWatchfaces() public {
         vm.mockCall(
             0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(1)
         );
         vm.mockCall(
             0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
 
@@ -308,17 +336,17 @@ contract MoonInkTest is Test {
     function testReadWithCastConnexionWhenCoven() public {
         vm.mockCall(
             0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(1)
         );
 
@@ -333,17 +361,17 @@ contract MoonInkTest is Test {
     function testReadWithCastConnexionWhenNotConnectedShouldFail() public {
         vm.mockCall(
             0xa698713a3bc386970Cdc95A720B5754cC0f96931, // Words contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x8d3b078D9D9697a8624d4B32743B02d270334AF1, // Watchfaces World contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
         vm.mockCall(
             0x5180db8F5c931aaE63c74266b211F580155ecac8, // Crypto Coven contract addr
-            abi.encodeWithSelector(IERC721Ownership.balanceOf.selector, address(this)),
+            abi.encodeWithSelector(IERC721.balanceOf.selector, address(this)),
             abi.encode(0)
         );
 
@@ -358,7 +386,7 @@ contract MoonInkTest is Test {
     }
 
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
-    // TODO store which phase and check against that, not Full Moon
+    // DONE store which phase and check against that, not Full Moon
     // TODO practice deploying contract to a vanity address
     // TODO add second moon image based on current phase, with animation
     // TODO determine if moon phases work out 1,000 years

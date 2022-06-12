@@ -7,7 +7,7 @@ const call = require('../../lib/hot-chain-svg/src/call');
 const compile = require('../../lib/hot-chain-svg/src/compile');
 const deploy = require('../../lib/hot-chain-svg/src/deploy');
 
-const SOURCE = path.join(__dirname, '..', '..', 'src', 'InkRenderer.sol');
+const SOURCE = path.join(__dirname, '..', '..', 'src', 'MoonInk.sol');
 
 async function main() {
   const { vm, pk } = await boot();
