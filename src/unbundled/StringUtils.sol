@@ -3,6 +3,8 @@ pragma solidity >=0.8.13;
 
 library StringUtils {
 
+    // TODO implement wrapping logic
+
     function wrapText(string memory text_) internal pure returns (string memory) {
         return text_;
     }

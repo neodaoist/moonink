@@ -277,12 +277,10 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     }
 
     // TODO figure out why not all MoonPhase SVG images are rendering
-    
+
     function getMoonImageForPhase(MoonPhase phase) internal pure returns (string memory) {
 
         bytes32 phaseBytes = keccak256(abi.encodePacked(phase));
-
-        // if (keccak256(abi.encodePacked(MoonPhase.FullMoon)) == keccak256(abi.encodePacked(MoonPhase.FullMoon))) {
 
         if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.FullMoon))) {
             return string.concat(
@@ -307,7 +305,6 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
                     utils.NULL
                 )
             );
-
         // } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.WaningGibbous))) {
         //     return string.concat(
         //         svg.path(
