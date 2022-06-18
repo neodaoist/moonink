@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.13;
 
-import "./SVG.sol";
-import "./Utils.sol";
+import {IMoonInk} from "./unbundled/IMoonInk.sol";
+import {MoonPhase} from "./unbundled/MoonPhase.sol";
+import {SecretMessage} from "./unbundled/SecretMessage.sol";
 
 import {IERC721Events} from "./unbundled/IERC721Events.sol";
 import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
@@ -11,11 +12,28 @@ import {IERC721} from "./unbundled/IERC721.sol";
 import {IERC165} from "./unbundled/IERC165.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
 import {ERC721} from "./unbundled/ERC721.sol";
-import {IMoonInk} from "./unbundled/IMoonInk.sol";
-import {MoonPhase} from "./unbundled/MoonPhase.sol";
-import {SecretMessage} from "./unbundled/SecretMessage.sol";
+
+import {svg} from "./SVG.sol";
+import {utils} from "./Utils.sol";
+
 import {Base64} from "./unbundled/Base64.sol";
 import {StringUtils} from "./unbundled/StringUtils.sol";
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//                                                                           //
+//     ███▄ ▄███▓ ▒█████   ▒█████   ███▄    █       ██▓ ███▄    █  ██ ▄█▀    //
+//    ▓██▒▀█▀ ██▒▒██▒  ██▒▒██▒  ██▒ ██ ▀█   █      ▓██▒ ██ ▀█   █  ██▄█▒     //
+//    ▓██    ▓██░▒██░  ██▒▒██░  ██▒▓██  ▀█ ██▒     ▒██▒▓██  ▀█ ██▒▓███▄░     //
+//    ▒██    ▒██ ▒██   ██░▒██   ██░▓██▒  ▐▌██▒     ░██░▓██▒  ▐▌██▒▓██ █▄     //
+//    ▒██▒   ░██▒░ ████▓▒░░ ████▓▒░▒██░   ▓██░     ░██░▒██░   ▓██░▒██▒ █▄    //
+//    ░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒      ░▓  ░ ▒░   ▒ ▒ ▒ ▒▒ ▓▒    //
+//    ░  ░      ░  ░ ▒ ▒░   ░ ▒ ▒░ ░ ░░   ░ ▒░      ▒ ░░ ░░   ░ ▒░░ ░▒ ▒░    //
+//    ░      ░   ░ ░ ░ ▒  ░ ░ ░ ▒     ░   ░ ░       ▒ ░   ░   ░ ░ ░ ░░ ░     //
+//           ░       ░ ░      ░ ░           ░       ░           ░ ░  ░       //
+//                                                                           //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
 
 /**
  * @title MoonInk
@@ -29,10 +47,11 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     string public override name = "Moon Ink";
     string public override symbol = "MOONINK";
 
-    uint256 public tokenId;
+    uint256 public tokenID;
 
     uint private genesisFullMoon = 1652716800;
     uint private MAX_LINE_LENGTH = 45;
+    uint private BURN_GRACE_PERIOD = 28 days;    
 
     mapping(uint256 => SecretMessage) public secretMessages;
 
@@ -128,30 +147,40 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     ////////////////////////////////////////////////
 
     function mint(string memory text_) external override returns (uint256) {
-        _mint(msg.sender, tokenId);
+        _mint(msg.sender, tokenID);
 
         MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
-        secretMessages[tokenId] = SecretMessage(phase, text_);
+        secretMessages[tokenID] = SecretMessage(phase, block.timestamp, msg.sender, text_);
 
-        return tokenId++;
+        return tokenID++;
     }
 
     function mint(address recipient_, string memory text_) public override returns (uint256) {
-        _mint(recipient_, tokenId);
+        _mint(recipient_, tokenID);
 
         MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
-        secretMessages[tokenId] = SecretMessage(phase, text_);
+        secretMessages[tokenID] = SecretMessage(phase, block.timestamp, msg.sender, text_);
 
-        return tokenId++;
+        return tokenID++;
     }
 
     ////////////////////////////////////////////////
-    ////////////////    Mint    ////////////////////
+    ////////////////    Burn    ////////////////////
     ////////////////////////////////////////////////
 
-    // TODO add burn, onlyOwner
+    function burn(uint256 tokenID_) public { // TODO consider using more std access control for original message writer
+        require(_isOriginalMessageWriter(tokenID_), "Only original writer can burn a message");
+        require(_isWithinBurnGracePeriod(tokenID_), "Can't burn a message after a complete moon cycle passes");
+        _burn(tokenID_);
+    }
 
+    function _isOriginalMessageWriter(uint256 tokenID_) internal view returns (bool) {
+        return msg.sender == secretMessages[tokenID_].writer;
+    }
 
+    function _isWithinBurnGracePeriod(uint256 tokenID_) internal view returns (bool) {
+        return block.timestamp - secretMessages[tokenID_].timestamp < BURN_GRACE_PERIOD;
+    }
 
     ////////////////////////////////////////////////
     ////////////////    Render    //////////////////
@@ -407,7 +436,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
     
     // TODO remove, only for testing hot-chain-svg rendering
     function example() external /** view */ returns (string memory) {
-        secretMessages[1] = SecretMessage(MoonPhase.FullMoon, "secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message ");
+        secretMessages[1] = SecretMessage(MoonPhase.FullMoon, block.timestamp, msg.sender, "secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message ");
         return render(1);
     }    
 }
