@@ -6,8 +6,6 @@ import "../src/MoonInk.sol";
 
 contract MoonInkTest is Test {
     
-    // using stdStorage for StdStorage;
-
     MoonInk private moon;
 
     // cycle
@@ -151,6 +149,7 @@ contract MoonInkTest is Test {
 
     function testInvalidDayShouldFail() public {
         vm.expectRevert("INVALID_DAY");
+
         moon.getMoonPhaseForDay(28);
     }
 
@@ -387,15 +386,18 @@ contract MoonInkTest is Test {
 
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
     // DONE store which phase and check against that, not Full Moon
-    // TODO practice deploying contract to a vanity address
+    // TODO consider switching to safe mint
+    // TODO practice deploying contract to vanity address 11111111
+    // TODO fix broken moon phase SVGs
     // TODO add second moon image based on current phase, with animation
     // TODO determine if moon phases work out 1,000 years
     // TODO add back in token ID (for easier reading)
     // TODO sketch mint page in Figma, reach out to designers
+    // TODO experiment with how to setup scaffold-eth as the mint page
     // 
 
     ////////////////////////////////////////////////
-    ////////////////    Utility    /////////////////
+    ////////////////    Assertion Helpers    ///////
     ////////////////////////////////////////////////
 
     function assertEq(MoonPhase phaseA, MoonPhase phaseB) internal {

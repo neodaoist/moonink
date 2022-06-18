@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.13;
 
-import "./SVG.sol";
-import "./Utils.sol";
+import {IMoonInk} from "./unbundled/IMoonInk.sol";
+import {MoonPhase} from "./unbundled/MoonPhase.sol";
+import {SecretMessage} from "./unbundled/SecretMessage.sol";
 
 import {IERC721Events} from "./unbundled/IERC721Events.sol";
 import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
@@ -11,11 +12,28 @@ import {IERC721} from "./unbundled/IERC721.sol";
 import {IERC165} from "./unbundled/IERC165.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
 import {ERC721} from "./unbundled/ERC721.sol";
-import {IMoonInk} from "./unbundled/IMoonInk.sol";
-import {MoonPhase} from "./unbundled/MoonPhase.sol";
-import {SecretMessage} from "./unbundled/SecretMessage.sol";
+
+import {svg} from "./SVG.sol";
+import {utils} from "./Utils.sol";
+
 import {Base64} from "./unbundled/Base64.sol";
 import {StringUtils} from "./unbundled/StringUtils.sol";
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//                                                                           //
+//     ███▄ ▄███▓ ▒█████   ▒█████   ███▄    █       ██▓ ███▄    █  ██ ▄█▀    //
+//    ▓██▒▀█▀ ██▒▒██▒  ██▒▒██▒  ██▒ ██ ▀█   █      ▓██▒ ██ ▀█   █  ██▄█▒     //
+//    ▓██    ▓██░▒██░  ██▒▒██░  ██▒▓██  ▀█ ██▒     ▒██▒▓██  ▀█ ██▒▓███▄░     //
+//    ▒██    ▒██ ▒██   ██░▒██   ██░▓██▒  ▐▌██▒     ░██░▓██▒  ▐▌██▒▓██ █▄     //
+//    ▒██▒   ░██▒░ ████▓▒░░ ████▓▒░▒██░   ▓██░     ░██░▒██░   ▓██░▒██▒ █▄    //
+//    ░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒      ░▓  ░ ▒░   ▒ ▒ ▒ ▒▒ ▓▒    //
+//    ░  ░      ░  ░ ▒ ▒░   ░ ▒ ▒░ ░ ░░   ░ ▒░      ▒ ░░ ░░   ░ ▒░░ ░▒ ▒░    //
+//    ░      ░   ░ ░ ░ ▒  ░ ░ ░ ▒     ░   ░ ░       ▒ ░   ░   ░ ░ ░ ░░ ░     //
+//           ░       ░ ░      ░ ░           ░       ░           ░ ░  ░       //
+//                                                                           //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
 
 /**
  * @title MoonInk
