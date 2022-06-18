@@ -48,7 +48,7 @@ contract MoonInkTest is Test {
     uint timec26 = 1657382400; // Sat Jul 09 2022 16:00:00 GMT+0000
     uint timec27 = 1657468800; // Sun Jul 10 2022 16:00:00 GMT+0000
 
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Transfer(address indexed from, address indexed to, uint256 indexed id);
 
     function setUp() public {
         moon = new MoonInk();
@@ -111,6 +111,46 @@ contract MoonInkTest is Test {
     }
 
     // 
+
+    ////////////////////////////////////////////////
+    ////////////////    Burn    ////////////////////
+    ////////////////////////////////////////////////
+
+    function testBurn() public {
+        vm.warp(time0);
+        moon.mint("");
+
+        assertEq(moon.ownerOf(0), address(this));
+
+        moon.burn(0);
+
+        vm.expectRevert("ERC721: owner query for nonexistent token");
+
+        moon.ownerOf(0);
+    }
+
+    function testBurnWhenNotOriginalWriterShouldFail() public {
+        vm.warp(time0);
+        moon.mint("");
+
+        vm.expectRevert("Only original writer can burn a message");
+
+        vm.prank(address(0xBABE));
+        moon.burn(0);
+    }
+
+    function testBurnWhenMoonCycleAlreadyPassedShouldFail() public {
+        vm.warp(time0);
+        moon.mint("");
+
+        vm.warp(timeb1);
+
+        vm.expectRevert("Can't burn a message after a complete moon cycle passes");
+
+        moon.burn(0);
+    }
+
+    // TODO add fuzz tests to exercise temporal edge cases
 
     ////////////////////////////////////////////////
     ////////////////    Time    ////////////////////
@@ -388,10 +428,13 @@ contract MoonInkTest is Test {
     // DONE store which phase and check against that, not Full Moon
     // TODO consider switching to safe mint
     // TODO practice deploying contract to vanity address 11111111
-    // TODO fix broken moon phase SVGs
-    // TODO add second moon image based on current phase, with animation
     // TODO determine if moon phases work out 1,000 years
     // TODO add back in token ID (for easier reading)
+    // TODO consider switching from openzep to solmate
+
+    // TODO fix broken moon phase SVGs
+    // TODO add second moon image based on current phase, with animation
+
     // TODO sketch mint page in Figma, reach out to designers
     // TODO experiment with how to setup scaffold-eth as the mint page
     // 
