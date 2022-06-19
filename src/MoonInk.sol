@@ -5,13 +5,15 @@ import {IMoonInk} from "./unbundled/IMoonInk.sol";
 import {MoonPhase} from "./unbundled/MoonPhase.sol";
 import {SecretMessage} from "./unbundled/SecretMessage.sol";
 
-import {IERC721Events} from "./unbundled/IERC721Events.sol";
-import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
-import {IERC721Receiver} from "./unbundled/IERC721Receiver.sol";
+// import {IERC721Events} from "./unbundled/IERC721Events.sol";
+// import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
+// import {IERC721Receiver} from "./unbundled/IERC721Receiver.sol";
 import {IERC721} from "./unbundled/IERC721.sol";
+// import {ERC721} from "./unbundled/ERC721.sol";
 import {IERC165} from "./unbundled/IERC165.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
-import {ERC721} from "./unbundled/ERC721.sol";
+
+import {ERC721} from "solmate/tokens/ERC721.sol";
 
 import {svg} from "./SVG.sol";
 import {utils} from "./Utils.sol";
@@ -42,10 +44,7 @@ import {StringUtils} from "./unbundled/StringUtils.sol";
  * Inspired by Words.sol contract, originally written by MirrorXYZ
  * https://etherscan.io/address/0xa698713a3bc386970cdc95a720b5754cc0f96931#code
  */ 
-contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
-
-    string public override name = "Moon Ink";
-    string public override symbol = "MOONINK";
+contract MoonInk is IMoonInk, ERC721 {
 
     uint256 public tokenID;
 
@@ -55,7 +54,7 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     mapping(uint256 => SecretMessage) public secretMessages;
 
-    constructor() {}
+    constructor() ERC721("Moon Ink", "MOONINK") {}
 
     ////////////////////////////////////////////////
     ////////////////    Time    ////////////////////
@@ -188,12 +187,12 @@ contract MoonInk is IMoonInk, ERC721, IERC721Metadata {
 
     // Mostly looted from Loot: https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7#code
     function tokenURI(uint256 tokenID_)
-        external
+        public
         view
         override
         returns (string memory)
     {
-        require(_exists(tokenID_), "INVALID_TOKEN");
+        require(ownerOf(tokenID_) != address(0), "INVALID_TOKEN");
 
         // string[3] memory parts;
         // parts[

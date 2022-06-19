@@ -60,7 +60,7 @@ contract MoonInkTest is Test {
     }
 
     function testInvalidTokenIDShouldFail() public {
-        vm.expectRevert("INVALID_TOKEN");
+        vm.expectRevert("NOT_MINTED");
 
         moon.tokenURI(0);
     }
@@ -124,7 +124,7 @@ contract MoonInkTest is Test {
 
         moon.burn(0);
 
-        vm.expectRevert("ERC721: owner query for nonexistent token");
+        vm.expectRevert("NOT_MINTED");
 
         moon.ownerOf(0);
     }
