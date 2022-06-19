@@ -5,15 +5,17 @@ import {IMoonInk} from "./unbundled/IMoonInk.sol";
 import {MoonPhase} from "./unbundled/MoonPhase.sol";
 import {SecretMessage} from "./unbundled/SecretMessage.sol";
 
+// TODO cleanup imports
 // import {IERC721Events} from "./unbundled/IERC721Events.sol";
 // import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
 // import {IERC721Receiver} from "./unbundled/IERC721Receiver.sol";
+import {IERC20} from "./unbundled/IERC20.sol";
 import {IERC721} from "./unbundled/IERC721.sol";
 // import {ERC721} from "./unbundled/ERC721.sol";
 import {IERC165} from "./unbundled/IERC165.sol";
+import {ERC721} from "solmate/tokens/ERC721.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
 
-import {ERC721} from "solmate/tokens/ERC721.sol";
 
 import {svg} from "./SVG.sol";
 import {utils} from "./Utils.sol";
@@ -134,7 +136,8 @@ contract MoonInk is IMoonInk, ERC721 {
         require(
             IERC721(0xa698713a3bc386970Cdc95A720B5754cC0f96931).balanceOf(msg.sender) >= 1 ||
             IERC721(0x8d3b078D9D9697a8624d4B32743B02d270334AF1).balanceOf(msg.sender) >= 1 ||
-            IERC721(0x5180db8F5c931aaE63c74266b211F580155ecac8).balanceOf(msg.sender) >= 1,
+            IERC721(0x5180db8F5c931aaE63c74266b211F580155ecac8).balanceOf(msg.sender) >= 1 ||
+            IERC20(0x20d4DB1946859E2Adb0e5ACC2eac58047aD41395).balanceOf(msg.sender) > 0,
             "NO_CONNEXIONS_FOUND"
         );
 
