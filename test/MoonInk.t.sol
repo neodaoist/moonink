@@ -2,9 +2,11 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/MoonInk.sol";
 
-contract MoonInkTest is Test {
+import "../src/MoonInk.sol";
+import {ERC721TokenReceiver} from "solmate/tokens/ERC721.sol";
+
+contract MoonInkTest is Test, ERC721TokenReceiver {
     
     MoonInk private moon;
 
@@ -476,11 +478,12 @@ contract MoonInkTest is Test {
 
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
     // DONE store which phase and check against that, not Full Moon
-    // TODO consider switching to safe mint
+    // DONE consider switching to safe mint
     // TODO practice deploying contract to vanity address 11111111
     // TODO determine if moon phases work out 1,000 years
-    // TODO add back in token ID (for easier reading)
-    // TODO consider switching from openzep to solmate
+    // DONE add back in token ID (for easier reading)
+    // DONE consider switching from openzep to solmate
+    // DONE add Moon DAO connexion
 
     // TODO fix broken moon phase SVGs
     // TODO add second moon image based on current phase, with animation
@@ -488,6 +491,15 @@ contract MoonInkTest is Test {
     // TODO sketch mint page in Figma, reach out to designers
     // TODO experiment with how to setup scaffold-eth as the mint page
     // 
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external virtual override returns (bytes4) {
+        return ERC721TokenReceiver.onERC721Received.selector;
+    }
 
     ////////////////////////////////////////////////
     ////////////////    Assertion Helpers    ///////

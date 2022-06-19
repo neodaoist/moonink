@@ -16,7 +16,6 @@ import {IERC165} from "./unbundled/IERC165.sol";
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
 
-
 import {svg} from "./SVG.sol";
 import {utils} from "./Utils.sol";
 
@@ -50,9 +49,9 @@ contract MoonInk is IMoonInk, ERC721 {
 
     uint256 public tokenID;
 
-    uint private genesisFullMoon = 1652716800;
-    uint private MAX_LINE_LENGTH = 45;
-    uint private BURN_GRACE_PERIOD = 28 days;    
+    uint private constant GENESIS_FULL_MOON = 1652716800;
+    uint private constant MAX_LINE_LENGTH = 45;
+    uint private constant BURN_GRACE_PERIOD = 28 days;    
 
     mapping(uint256 => SecretMessage) public secretMessages;
 
@@ -65,7 +64,7 @@ contract MoonInk is IMoonInk, ERC721 {
     function getMoonPhaseForCurrentTime(uint currentTime_) public view returns (MoonPhase) {
         require(currentTime_ >= block.timestamp, "TIME_IN_PAST");
 
-        return getMoonPhaseForDay(((currentTime_ - genesisFullMoon) / 60 / 60 / 24) % 28);
+        return getMoonPhaseForDay(((currentTime_ - GENESIS_FULL_MOON) / 60 / 60 / 24) % 28);
     }
 
     function getMoonPhaseForDay(uint256 dayOfCycle_) public view returns (MoonPhase) {
@@ -149,7 +148,7 @@ contract MoonInk is IMoonInk, ERC721 {
     ////////////////////////////////////////////////
 
     function mint(string memory text_) external override returns (uint256) {
-        _mint(msg.sender, tokenID);
+        _safeMint(msg.sender, tokenID);
 
         MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
         secretMessages[tokenID] = SecretMessage(phase, block.timestamp, msg.sender, text_);
@@ -158,7 +157,7 @@ contract MoonInk is IMoonInk, ERC721 {
     }
 
     function mint(address recipient_, string memory text_) public override returns (uint256) {
-        _mint(recipient_, tokenID);
+        _safeMint(recipient_, tokenID);
 
         MoonPhase phase = getMoonPhaseForCurrentTime(block.timestamp);
         secretMessages[tokenID] = SecretMessage(phase, block.timestamp, msg.sender, text_);
