@@ -482,7 +482,7 @@ contract MoonInkTest is Test, ERC721TokenReceiver {
     ////////////////////////////////////////////////
 
     function testRender() public {
-        moon.render(1);
+        moon.example();
     }
 
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
