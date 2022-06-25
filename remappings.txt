@@ -1,0 +1,3 @@
+forge-std/=lib/forge-std/src/
+solmate/=lib/solmate/src/
+hot-chain-svg=lib/hot-chain-svg/contracts/

@@ -2,7 +2,6 @@
 pragma solidity >=0.8.13;
 
 library StringUtils {
-
     // TODO implement wrapping logic
 
     function wrapText(string memory text_) internal pure returns (string memory) {
@@ -40,7 +39,6 @@ library StringUtils {
     // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
 
     function toString(uint256 value) internal pure returns (string memory) {
-        
         if (value == 0) {
             return "0";
         }

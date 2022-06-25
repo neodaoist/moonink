@@ -2,6 +2,7 @@
 pragma solidity >=0.8.13;
 
 interface IERC721 {
+    //
     function balanceOf(address owner) external view returns (uint256 balance);
 
     function ownerOf(uint256 tokenId) external view returns (address owner);
@@ -20,17 +21,11 @@ interface IERC721 {
 
     function approve(address to, uint256 tokenId) external;
 
-    function getApproved(uint256 tokenId)
-        external
-        view
-        returns (address operator);
+    function getApproved(uint256 tokenId) external view returns (address operator);
 
     function setApprovalForAll(address operator, bool _approved) external;
 
-    function isApprovedForAll(address owner, address operator)
-        external
-        view
-        returns (bool);
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
 
     function safeTransferFrom(
         address from,

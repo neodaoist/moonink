@@ -4,33 +4,21 @@ pragma solidity ^0.8.12;
 // Core utils used extensively to format CSS and numbers.
 library utils {
     // used to simulate empty strings
-    string internal constant NULL = '';
+    string internal constant NULL = "";
 
     // formats a CSS variable line. includes a semicolon for formatting.
-    function setCssVar(string memory _key, string memory _val)
-        internal
-        pure
-        returns (string memory)
-    {
-        return string.concat('--', _key, ':', _val, ';');
+    function setCssVar(string memory _key, string memory _val) internal pure returns (string memory) {
+        return string.concat("--", _key, ":", _val, ";");
     }
 
     // formats getting a css variable
-    function getCssVar(string memory _key)
-        internal
-        pure
-        returns (string memory)
-    {
-        return string.concat('var(--', _key, ')');
+    function getCssVar(string memory _key) internal pure returns (string memory) {
+        return string.concat("var(--", _key, ")");
     }
 
     // formats getting a def URL
-    function getDefURL(string memory _id)
-        internal
-        pure
-        returns (string memory)
-    {
-        return string.concat('url(#', _id, ')');
+    function getDefURL(string memory _id) internal pure returns (string memory) {
+        return string.concat("url(#", _id, ")");
     }
 
     // formats rgba white with a specified opacity / alpha
@@ -50,39 +38,28 @@ library utils {
         uint256 _b,
         uint256 _a
     ) internal pure returns (string memory) {
-        string memory formattedA = _a < 100
-            ? string.concat('0.', utils.uint2str(_a))
-            : '1';
+        string memory formattedA = _a < 100 ? string.concat("0.", utils.uint2str(_a)) : "1";
         return
             string.concat(
-                'rgba(',
+                "rgba(",
                 utils.uint2str(_r),
-                ',',
+                ",",
                 utils.uint2str(_g),
-                ',',
+                ",",
                 utils.uint2str(_b),
-                ',',
+                ",",
                 formattedA,
-                ')'
+                ")"
             );
     }
 
     // checks if two strings are equal
-    function stringsEqual(string memory _a, string memory _b)
-        internal
-        pure
-        returns (bool)
-    {
-        return
-            keccak256(abi.encodePacked(_a)) == keccak256(abi.encodePacked(_b));
+    function stringsEqual(string memory _a, string memory _b) internal pure returns (bool) {
+        return keccak256(abi.encodePacked(_a)) == keccak256(abi.encodePacked(_b));
     }
 
     // returns the length of a string in characters
-    function utfStringLength(string memory _str)
-        internal
-        pure
-        returns (uint256 length)
-    {
+    function utfStringLength(string memory _str) internal pure returns (uint256 length) {
         uint256 i = 0;
         bytes memory string_rep = bytes(_str);
 
@@ -100,13 +77,9 @@ library utils {
     }
 
     // converts an unsigned integer to a string
-    function uint2str(uint256 _i)
-        internal
-        pure
-        returns (string memory _uintAsString)
-    {
+    function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
         if (_i == 0) {
-            return '0';
+            return "0";
         }
         uint256 j = _i;
         uint256 len;

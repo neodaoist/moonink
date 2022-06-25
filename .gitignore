@@ -1,4 +1,6 @@
+.env
 cache/
+node_modules
 out/
 js/node_modules
 js/.DS_Store
