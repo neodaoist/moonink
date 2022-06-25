@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-//const serve = require(path.join(__dirname, '..', '..', 'lib/hot-chain-svg', 'serve.js'));
+// //const serve = require(path.join(__dirname, '..', '..', 'lib/hot-chain-svg', 'serve.js'));
 const serve = require('../../lib/hot-chain-svg/src/serve');
 const boot = require('../../lib/hot-chain-svg/src/boot');
 const call = require('../../lib/hot-chain-svg/src/call');

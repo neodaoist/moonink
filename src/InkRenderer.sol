@@ -178,7 +178,7 @@ contract InkRenderer {
                     )
                 ),
 
-                // minted moon phase image
+                // DONE (not all phases) minted moon phase image
                 svg.g(
                     string.concat(
                         svg.prop('transform', 'translate(0.000000,300.000000) scale(0.182926829,-0.182926829)'),
@@ -202,7 +202,7 @@ contract InkRenderer {
                 //     moonPhases[17].svgImage
                 // ),
 
-                // secret message
+                // DONE (missing animation) ecret message
                 svg.text(
                     string.concat(
                         svg.prop('x', '20'),
@@ -211,7 +211,7 @@ contract InkRenderer {
                         svg.prop('fill', 'black') // TODO adjust so as to fade in and out
                     ),
                     string.concat(
-                        'secret message written secret message written secret message written secret message written secret message written secret message written',
+                        'secret message written',
                         svg.el(
                             'animate',
                             string.concat(
@@ -223,7 +223,7 @@ contract InkRenderer {
                             ),                                
                             utils.NULL
                         )
-                    )                        
+                    )
                 ),
 
                 // DONE title/body separator

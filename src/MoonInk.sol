@@ -5,15 +5,10 @@ import {IMoonInk} from "./unbundled/IMoonInk.sol";
 import {MoonPhase} from "./unbundled/MoonPhase.sol";
 import {SecretMessage} from "./unbundled/SecretMessage.sol";
 
-// TODO cleanup imports
-// import {IERC721Events} from "./unbundled/IERC721Events.sol";
-// import {IERC721Metadata} from "./unbundled/IERC721Metadata.sol";
-// import {IERC721Receiver} from "./unbundled/IERC721Receiver.sol";
 import {IERC20} from "./unbundled/IERC20.sol";
 import {IERC721} from "./unbundled/IERC721.sol";
-// import {ERC721} from "./unbundled/ERC721.sol";
+import {ERC721} from "./unbundled/sol-ERC721.sol";
 import {IERC165} from "./unbundled/IERC165.sol";
-import {ERC721} from "solmate/tokens/ERC721.sol";
 import {ERC165} from "./unbundled/ERC165.sol";
 
 import {svg} from "./SVG.sol";
@@ -191,11 +186,13 @@ contract MoonInk is IMoonInk, ERC721 {
     function tokenURI(uint256 tokenID_)
         public
         view
+        virtual
         override
         returns (string memory)
     {
         require(ownerOf(tokenID_) != address(0), "INVALID_TOKEN");
 
+        // OLD
         // string[3] memory parts;
         // parts[
         //     0
@@ -207,25 +204,28 @@ contract MoonInk is IMoonInk, ERC721 {
         //     abi.encodePacked(parts[0], parts[1], parts[2])
         // );
 
-        string memory output = render(tokenID_);
+        // NEW
+        // string memory svgRender = render(tokenID_);
+        // string memory json = Base64.encode(
+        //     bytes(
+        //         string(
+        //             abi.encodePacked(
+        //                 '{"name": "Moon Ink #',
+        //                 StringUtils.toString(tokenID_),
+        //                 '", "description": "XYZ", "image": "data:image/svg+xml;base64,',
+        //                 Base64.encode(bytes(svgRender)),
+        //                 '"}'
+        //             )
+        //         )
+        //     )
+        // );
+        
+        // return string(
+        //     abi.encodePacked("data:application/json;base64,", json)
+        // );
 
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "Moon Ink #',
-                        StringUtils.toString(tokenID_),
-                        '", "description": "XYZ", "image": "data:image/svg+xml;base64,',
-                        Base64.encode(bytes(output)),
-                        '"}'
-                    )
-                )
-            )
-        );
-        output = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
-        return output;
+        // TODO fix me
+        return "";
     }
 
     function render(uint256 tokenID_) public view returns (string memory) {
@@ -234,7 +234,8 @@ contract MoonInk is IMoonInk, ERC721 {
         return string.concat(
             // start
             // '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" />',
-            '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" />',
+            '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background:#000">',
+            // <style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" />
 
 
 
@@ -277,9 +278,27 @@ contract MoonInk is IMoonInk, ERC721 {
                 string.concat(
                     svg.prop('x', '20'),
                     svg.prop('y', '85'),
-                    svg.prop('class', 'base')
+                    svg.prop('font-size', '16.5'),
+                    svg.prop('fill', 'black')
                 ),
-                StringUtils.length(secretMessage.text) > MAX_LINE_LENGTH ? StringUtils.wrapText(secretMessage.text) : secretMessage.text
+                string.concat(
+                    // TODO fix wrapping — why does this break when including 'fill'=>'freeze' ???
+
+                    // StringUtils.length(secretMessage.text) > MAX_LINE_LENGTH ?
+                    //     StringUtils.wrapText(secretMessage.text) : secretMessage.text,
+                    secretMessage.text,
+                    svg.el(
+                        'animate',
+                        string.concat(
+                            svg.prop('attributeName', 'fill'),
+                            svg.prop('from', 'black'),
+                            svg.prop('to', 'grey'),
+                            svg.prop('dur', '3s'),
+                            svg.prop('fill', 'freeze')
+                        ),
+                        utils.NULL
+                    )
+                )
             ),
             // '<text x="10" y="20" class="base">',
             // secretMessages[tokenID_].text,
@@ -335,33 +354,14 @@ contract MoonInk is IMoonInk, ERC721 {
                     utils.NULL
                 )
             );
-        // } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.WaningGibbous))) {
-        //     return string.concat(
-        //         svg.path(
-        //             svg.prop('d', 'M1 1243 c1 -240 5 -372 9 -333 13 109 62 256 81 244 5 -3 6 2 3 10 -7 18 61 130 122 202 114 134 314 240 495 263 42 6 -69 9 -323 10 l-388 1 1 -397z'),
-        //             utils.NULL
-        //         ),
-        //         svg.path(
-        //             svg.prop('d', 'M843 1633 c29 -7 129 -62 141 -77 6 -8 34 -26 61 -41 28 -15 58 -36 68 -46 10 -11 29 -27 43 -36 14 -9 23 -22 20 -29 -5 -14 17 -37 27 -27 4 3 9 -1 13 -10 3 -9 20 -31 37 -50 30 -32 50 -67 82 -142 41 -97 42 -105 20 -105 -8 0 -22 16 -31 35 -21 45 -37 46 -18 0 25 -61 16 -71 -29 -30 -15 14 -28 23 -28 20 -1 -3 -2 -9 -3 -15 0 -5 -7 -15 -13 -22 -15 -14 -17 -38 -4 -38 5 0 11 7 15 15 3 8 10 15 16 15 15 0 12 -30 -4 -36 -8 -3 -12 -12 -9 -20 3 -8 9 -11 14 -8 5 3 7 9 4 14 -3 5 -1 11 5 15 6 3 10 -3 10 -15 0 -13 5 -20 13 -17 6 2 11 10 9 16 -1 6 2 11 8 11 5 0 10 7 10 15 0 22 26 29 49 13 14 -10 17 -18 10 -28 -12 -19 -12 -53 0 -45 16 10 23 -34 11 -71 -8 -23 -9 -39 -2 -47 6 -7 12 -46 15 -87 4 -57 2 -79 -9 -91 -10 -11 -12 -23 -6 -40 6 -16 4 -35 -6 -58 -8 -20 -16 -47 -19 -60 -2 -14 -10 -36 -18 -50 -7 -14 -16 -33 -20 -41 -3 -8 -17 -33 -30 -55 -13 -22 -33 -56 -44 -75 -49 -89 -274 -264 -361 -281 -19 -4 142 -7 358 -8 l392 -1 0 820 0 820 -407 -1 c-225 -1 -400 -3 -390 -6z'),
-        //             utils.NULL
-        //         ),
-        //         svg.path(
-        //             svg.prop('d', 'M250 1307 c-14 -17 -19 -28 -12 -24 7 5 12 3 12 -3 0 -11 -7 -14 -51 -24 -18 -4 -36 -23 -62 -67 -21 -34 -37 -68 -37 -75 0 -8 -3 -14 -7 -14 -5 0 -16 -14 -26 -31 -13 -23 -15 -35 -7 -44 8 -9 7 -14 -1 -17 -9 -3 -7 -12 6 -31 9 -15 15 -33 12 -42 -4 -8 -2 -17 4 -21 6 -3 8 -12 5 -20 -3 -8 0 -13 6 -11 6 1 11 -7 13 -18 1 -11 5 -31 10 -45 7 -22 6 -23 -9 -11 -14 12 -16 11 -16 -3 0 -9 4 -16 9 -16 5 0 12 -14 16 -30 4 -16 13 -30 20 -30 9 0 12 -6 9 -15 -4 -8 -1 -15 6 -15 6 0 8 -5 4 -12 -5 -8 -2 -9 11 -4 11 4 22 2 27 -6 6 -11 10 -10 17 1 10 15 -14 71 -31 71 -6 0 -3 9 6 19 10 11 15 25 11 30 -3 6 -1 11 4 11 6 0 11 -11 11 -25 0 -14 4 -25 9 -25 5 0 25 -16 45 -35 40 -38 47 -37 16 3 -11 14 -17 28 -13 31 4 3 13 16 20 28 17 30 -16 130 -41 125 -16 -3 -15 -1 1 16 10 10 21 17 25 15 4 -2 4 6 -1 19 -4 13 -18 24 -29 26 -17 3 -22 12 -24 45 -2 27 -7 41 -15 40 -20 -4 -15 15 5 20 13 2 8 8 -18 20 -19 10 -27 15 -17 12 25 -7 43 5 26 17 -11 8 -12 11 -1 15 17 7 52 44 52 55 0 5 -11 -4 -24 -19 -25 -29 -50 -26 -26 3 8 9 10 18 4 22 -20 15 -14 32 9 27 26 -7 64 26 52 45 -4 6 1 17 11 24 9 7 13 15 8 18 -5 3 -20 -8 -34 -25z'),
-        //             utils.NULL
-        //         ),
-        //         svg.path(
-        //             svg.prop('d', 'M1 393 l-1 -393 383 1 c277 1 364 4 317 11 -240 34 -467 190 -592 408 -37 65 -89 223 -98 299 -4 41 -8 -85 -9 -326z'),
-        //             utils.NULL
-        //         )
-        //     );
-        } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.LastQuarter))) {
+        } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.WaningGibbous))) {
             return string.concat(
                 svg.path(
                     svg.prop('d', 'M1 1243 c1 -240 5 -372 9 -333 13 109 62 256 81 244 5 -3 6 2 3 10 -7 18 61 130 122 202 114 134 314 240 495 263 42 6 -69 9 -323 10 l-388 1 1 -397z'),
                     utils.NULL
                 ),
                 svg.path(
-                    svg.prop('d', 'M820 1623 c0 -10 -6 -29 -13 -43 -8 -14 -12 -37 -11 -50 9 -72 11 -121 3 -109 -13 22 -22 3 -9 -21 8 -15 8 -25 1 -34 -6 -8 -9 -20 -5 -29 3 -8 0 -18 -5 -22 -6 -3 -9 -11 -5 -16 3 -5 10 -7 15 -4 13 8 11 -9 -2 -22 -8 -8 -8 -21 -1 -45 19 -61 13 -125 -14 -150 -14 -13 -24 -35 -24 -50 0 -29 15 -38 23 -15 7 19 28 -43 22 -64 -4 -11 -15 -19 -26 -19 -10 0 -19 -6 -19 -14 0 -23 18 -28 29 -9 9 15 10 13 11 -12 0 -17 4 -46 10 -65 7 -24 6 -44 -2 -66 -9 -26 -9 -36 1 -48 10 -12 11 -19 2 -30 -8 -10 -9 -16 -1 -21 5 -3 10 -30 10 -58 -1 -29 1 -144 4 -257 3 -113 6 -238 6 -277 l0 -73 410 0 410 0 0 820 0 820 -410 0 c-384 0 -410 -1 -410 -17z'),
+                    svg.prop('d', 'M843 1633 c29 -7 129 -62 141 -77 6 -8 34 -26 61 -41 28 -15 58 -36 68 -46 10 -11 29 -27 43 -36 14 -9 23 -22 20 -29 -5 -14 17 -37 27 -27 4 3 9 -1 13 -10 3 -9 20 -31 37 -50 30 -32 50 -67 82 -142 41 -97 42 -105 20 -105 -8 0 -22 16 -31 35 -21 45 -37 46 -18 0 25 -61 16 -71 -29 -30 -15 14 -28 23 -28 20 -1 -3 -2 -9 -3 -15 0 -5 -7 -15 -13 -22 -15 -14 -17 -38 -4 -38 5 0 11 7 15 15 3 8 10 15 16 15 15 0 12 -30 -4 -36 -8 -3 -12 -12 -9 -20 3 -8 9 -11 14 -8 5 3 7 9 4 14 -3 5 -1 11 5 15 6 3 10 -3 10 -15 0 -13 5 -20 13 -17 6 2 11 10 9 16 -1 6 2 11 8 11 5 0 10 7 10 15 0 22 26 29 49 13 14 -10 17 -18 10 -28 -12 -19 -12 -53 0 -45 16 10 23 -34 11 -71 -8 -23 -9 -39 -2 -47 6 -7 12 -46 15 -87 4 -57 2 -79 -9 -91 -10 -11 -12 -23 -6 -40 6 -16 4 -35 -6 -58 -8 -20 -16 -47 -19 -60 -2 -14 -10 -36 -18 -50 -7 -14 -16 -33 -20 -41 -3 -8 -17 -33 -30 -55 -13 -22 -33 -56 -44 -75 -49 -89 -274 -264 -361 -281 -19 -4 142 -7 358 -8 l392 -1 0 820 0 820 -407 -1 c-225 -1 -400 -3 -390 -6z'),
                     utils.NULL
                 ),
                 svg.path(
@@ -373,6 +373,25 @@ contract MoonInk is IMoonInk, ERC721 {
                     utils.NULL
                 )
             );
+        // } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.LastQuarter))) {
+        //     return string.concat(
+        //         svg.path(
+        //             svg.prop('d', 'M1 1243 c1 -240 5 -372 9 -333 13 109 62 256 81 244 5 -3 6 2 3 10 -7 18 61 130 122 202 114 134 314 240 495 263 42 6 -69 9 -323 10 l-388 1 1 -397z'),
+        //             utils.NULL
+        //         ),
+        //         svg.path(
+        //             svg.prop('d', 'M820 1623 c0 -10 -6 -29 -13 -43 -8 -14 -12 -37 -11 -50 9 -72 11 -121 3 -109 -13 22 -22 3 -9 -21 8 -15 8 -25 1 -34 -6 -8 -9 -20 -5 -29 3 -8 0 -18 -5 -22 -6 -3 -9 -11 -5 -16 3 -5 10 -7 15 -4 13 8 11 -9 -2 -22 -8 -8 -8 -21 -1 -45 19 -61 13 -125 -14 -150 -14 -13 -24 -35 -24 -50 0 -29 15 -38 23 -15 7 19 28 -43 22 -64 -4 -11 -15 -19 -26 -19 -10 0 -19 -6 -19 -14 0 -23 18 -28 29 -9 9 15 10 13 11 -12 0 -17 4 -46 10 -65 7 -24 6 -44 -2 -66 -9 -26 -9 -36 1 -48 10 -12 11 -19 2 -30 -8 -10 -9 -16 -1 -21 5 -3 10 -30 10 -58 -1 -29 1 -144 4 -257 3 -113 6 -238 6 -277 l0 -73 410 0 410 0 0 820 0 820 -410 0 c-384 0 -410 -1 -410 -17z'),
+        //             utils.NULL
+        //         ),
+        //         svg.path(
+        //             svg.prop('d', 'M250 1307 c-14 -17 -19 -28 -12 -24 7 5 12 3 12 -3 0 -11 -7 -14 -51 -24 -18 -4 -36 -23 -62 -67 -21 -34 -37 -68 -37 -75 0 -8 -3 -14 -7 -14 -5 0 -16 -14 -26 -31 -13 -23 -15 -35 -7 -44 8 -9 7 -14 -1 -17 -9 -3 -7 -12 6 -31 9 -15 15 -33 12 -42 -4 -8 -2 -17 4 -21 6 -3 8 -12 5 -20 -3 -8 0 -13 6 -11 6 1 11 -7 13 -18 1 -11 5 -31 10 -45 7 -22 6 -23 -9 -11 -14 12 -16 11 -16 -3 0 -9 4 -16 9 -16 5 0 12 -14 16 -30 4 -16 13 -30 20 -30 9 0 12 -6 9 -15 -4 -8 -1 -15 6 -15 6 0 8 -5 4 -12 -5 -8 -2 -9 11 -4 11 4 22 2 27 -6 6 -11 10 -10 17 1 10 15 -14 71 -31 71 -6 0 -3 9 6 19 10 11 15 25 11 30 -3 6 -1 11 4 11 6 0 11 -11 11 -25 0 -14 4 -25 9 -25 5 0 25 -16 45 -35 40 -38 47 -37 16 3 -11 14 -17 28 -13 31 4 3 13 16 20 28 17 30 -16 130 -41 125 -16 -3 -15 -1 1 16 10 10 21 17 25 15 4 -2 4 6 -1 19 -4 13 -18 24 -29 26 -17 3 -22 12 -24 45 -2 27 -7 41 -15 40 -20 -4 -15 15 5 20 13 2 8 8 -18 20 -19 10 -27 15 -17 12 25 -7 43 5 26 17 -11 8 -12 11 -1 15 17 7 52 44 52 55 0 5 -11 -4 -24 -19 -25 -29 -50 -26 -26 3 8 9 10 18 4 22 -20 15 -14 32 9 27 26 -7 64 26 52 45 -4 6 1 17 11 24 9 7 13 15 8 18 -5 3 -20 -8 -34 -25z'),
+        //             utils.NULL
+        //         ),
+        //         svg.path(
+        //             svg.prop('d', 'M1 393 l-1 -393 383 1 c277 1 364 4 317 11 -240 34 -467 190 -592 408 -37 65 -89 223 -98 299 -4 41 -8 -85 -9 -326z'),
+        //             utils.NULL
+        //         )
+        //     );
         // } else if (phaseBytes == keccak256(abi.encodePacked(MoonPhase.WaningCrescent))) {
         //     return string.concat(
         //         svg.path(
@@ -436,8 +455,10 @@ contract MoonInk is IMoonInk, ERC721 {
     }
     
     // TODO remove, only for testing hot-chain-svg rendering
-    function example() external /** view */ returns (string memory) {
-        secretMessages[1] = SecretMessage(MoonPhase.FullMoon, block.timestamp, msg.sender, "secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message ");
+    function example() external returns (string memory) {
+        // string memory long = "secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message secret message ";
+        secretMessages[1] = SecretMessage(MoonPhase.FullMoon, block.timestamp, msg.sender, "secret message secret message");
+        
         return render(1);
     }    
 }

@@ -476,6 +476,14 @@ contract MoonInkTest is Test, ERC721TokenReceiver {
         moon.castConnexion(tokenID);
     }
 
+    ////////////////////////////////////////////////
+    ////////////////    Render    //////////////////
+    ////////////////////////////////////////////////
+
+    function testRender() public {
+        moon.render(1);
+    }
+
     // DONE add Connexion mechanic (Words, Watchfaces World, Crypto Coven)
     // DONE store which phase and check against that, not Full Moon
     // DONE consider switching to safe mint
