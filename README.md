@@ -1,6 +1,6 @@
 # 🌙 Moon Ink ✍️
 
-_an experimental, on-chain NFT project, built on Ethereum_
+_an experimental smart contract project, built on Ethereum_
 
 ## Who's it for
 
@@ -44,4 +44,4 @@ Write secret messages in **🌙 Moon Ink ✍️**, which can only be read by the
 
 ## Credits
 
-Built by [@neodaoist](https://twitter.com/neodaoist) // [neodaoist.xyz](https://neodaoist.xyz/) in Spring–Summer 2022
+Built by [@neodaoist](https://twitter.com/neodaoist) // [neodaoist.xyz](https://neodaoist.xyz/) // neodaoist.eth in Spring–Summer 2022
